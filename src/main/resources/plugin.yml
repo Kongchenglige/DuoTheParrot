@@ -1,0 +1,17 @@
+name: DuoTheParrot
+version: '${project.version}'
+main: cn.iasoc.duotheparrot.DuoTheParrot
+folia-supported: true
+api-version: '1.20'
+commands:
+    dtp:
+        description: 'DuoTheParrot command'
+        usage: '/dtp'
+        aliases: [duotheparrot]
+    reload:
+        description: 'Reload DuoTheParrot'
+        usage: '/dtp reload'
+        permissions: 'duotheparrot.reload'
+    random:
+        description: 'Random Number'
+        usage: '/dtp random'
