@@ -15,3 +15,4 @@ commands:
     random:
         description: 'Random Number'
         usage: '/dtp random'
+        permissions: 'duotheparrot.random'

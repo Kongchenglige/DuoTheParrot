@@ -55,6 +55,7 @@ public class MobSpawnListener implements Listener {
                 parrot.addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, 60, 0));
                 parrot.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 10, 2));
                 // Example fight back logic: Damage the player
+                parrot.attack(player);
                 player.damage(event.getDamage() * 2); // Damages the player
                 if (!DamagedMessages.isEmpty()) {
                     // Send a random message to the player

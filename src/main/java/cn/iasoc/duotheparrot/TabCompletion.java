@@ -31,6 +31,7 @@ public class TabCompletion implements TabCompleter {
                     }
                 }
             }
+            completions.remove(label);
         }
         return completions;
     }

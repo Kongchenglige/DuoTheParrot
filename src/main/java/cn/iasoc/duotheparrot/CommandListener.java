@@ -1,24 +1,27 @@
 package cn.iasoc.duotheparrot;
 
+import net.luckperms.api.LuckPerms;
+import net.luckperms.api.model.user.User;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class CommandListener implements CommandExecutor {
     private final JavaPlugin plugin;
     private final Random random = new Random();
     private TabCompletion tabCompletion;
+    private final HashMap<UUID, Long> lastUsed = new HashMap<>();
+    private LuckPerms luckPerms;
 
     public CommandListener(JavaPlugin plugin) {
         this.plugin = plugin;
         this.tabCompletion = new TabCompletion(plugin);
+        luckPerms = plugin.getServer().getServicesManager().load(LuckPerms.class);
         Objects.requireNonNull(plugin.getCommand("dtp")).setExecutor(this);
         Objects.requireNonNull(plugin.getCommand("duotheparrot")).setExecutor(this);
         Objects.requireNonNull(plugin.getCommand("dtp")).setTabCompleter(tabCompletion);
@@ -40,6 +43,31 @@ public class CommandListener implements CommandExecutor {
             }
             switch (args[0]) {
                 case "random":
+
+                    if (!sender.hasPermission("duotheparrot.random")) {
+                        sender.sendMessage(org.bukkit.ChatColor.RED + "[DTP]您沒有權限來這麽做.");
+                        return true;
+                    }
+
+                    UUID PlayerUUID = luckPerms.getUserManager().getUser(sender.getName()).getUniqueId();
+
+                    // Retrieve cooldown from LuckPerms metadata
+                    User user = luckPerms.getUserManager().getUser(PlayerUUID);
+
+                    String cooldownMeta = user.getCachedData().getMetaData().getMetaValue("dtp.Cooldown");
+
+                    long cooldown = cooldownMeta != null ? Long.parseLong(cooldownMeta) * 1000 : 1000; // Default 1 seconds
+
+                    long lastUsedTime = lastUsed.getOrDefault(PlayerUUID, 0L);
+                    long currentTime = System.currentTimeMillis();
+                    long timeLeft = (lastUsedTime + cooldown) - currentTime;
+
+                    if (timeLeft > 0) {
+                        sender.sendMessage(ChatColor.RED + "[DTP]請等待 " + (timeLeft / 1000) + " 秒后使用指令.");
+                        return true;
+                    }
+
+                    lastUsed.put(PlayerUUID, currentTime);
 
                     if (args.length < 2 || args.length > 4) {
                         sender.sendMessage(org.bukkit.ChatColor.RED + "[DTP]使用方法: /" + label + " random <最大數> <最小數> <數字數量>");
