@@ -78,7 +78,7 @@ public class CommandListener implements CommandExecutor {
                                 break;
                         }
 
-                        if (start > end) {
+                        if (start > end || start == end) {
                             sender.sendMessage(org.bukkit.ChatColor.RED + "[DTP]最小數必須小於最大數.");
                             return true;
                         }
